@@ -1,7 +1,9 @@
-import sys
-from stat import *
 import os
 import shutil
+from tkinter import *
+from tkinter import filedialog
+from stat import *
+import sys
 
 
 def folder_exists(folder_name):
@@ -20,17 +22,14 @@ def create_folder(folder_name):
 
 
 def move_file(source, destination):
-    print("SOURCE: ", source)
-    print("DESTINATION: ", destination)
+    print("FILE NAME: ", source)
     origin = os.path.join(path, source)
     target = os.path.join(path, destination)
     print("ORIGIN PATH: ", origin)
     print("TRGET PATH: ", target)
-    # if folder_exists(path):
     if folder_exists(destination):
         try:
             shutil.move(origin, target)
-            print("Moved: ", source, "-->", target)
             return True
         except Exception as e:
             print(e)
@@ -65,9 +64,8 @@ def category_files():
     from category import categories
 
     for item in list_files():
-        ext = string.lower(item.split('.')[-1])
-        source = item
-        print("SOURCE ITEM: ", source)
+        ext = item.split('.')[-1].lower()
+        print('EXTENTION:', ext)
 
         if ext in categories['documents']:
             target = 'Documents'
@@ -89,17 +87,28 @@ def category_files():
 
         else:
             target = 'Others'
-        
-        if move_file(source, target):
-                print(target, '-->', item)
+
+        if move_file(item, target):
+            print('MOVED TO: ', target, '/', item)
         else:
             continue
-        
+
         print('################')
         print("")
 
 
 if __name__ == '__main__':
-    path = 'C:/Users/adity/Downloads'
-    category_files()
-    exit()
+    base = Tk()
+
+    base.geometry('200x200')
+
+    def file_opener():
+        global path
+        path = filedialog.askdirectory(initialdir="/")
+        print(path)
+        category_files()
+        print("COMPLETED")
+
+    x = Button(base, text='Select Path', command=lambda: file_opener())
+    x.pack()
+    mainloop()
